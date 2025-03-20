@@ -1,20 +1,16 @@
-import { SearchProvider, SearchSettings, ToolCall } from '@agent-infra/shared';
+import { SearchProvider, ToolCall } from '@agent-infra/shared';
 import {
   SearchClient,
   SearchProvider as SearchProviderEnum,
 } from '@agent-infra/search';
 import { MCPToolResult } from '@main/type';
 import { tavily as tavilyCore } from '@tavily/core';
+import { SettingStore } from '@main/store/setting';
 
 export const tavily = tavilyCore;
 
-let currentSearchConfig: SearchSettings | null = null;
-
-export function updateSearchConfig(config: SearchSettings) {
-  currentSearchConfig = config;
-}
-
 const searchByTavily = async (options: { count: number; query: string }) => {
+  const currentSearchConfig = SettingStore.get('search');
   const client = tavily({
     apiKey: process.env.TAVILY_API_KEY || currentSearchConfig?.apiKey,
   });
@@ -33,11 +29,25 @@ const searchByTavily = async (options: { count: number; query: string }) => {
 };
 
 export async function search(toolCall: ToolCall): Promise<MCPToolResult> {
+  const currentSearchConfig = SettingStore.get('search');
   const args = JSON.parse(toolCall.function.arguments);
 
   try {
     if (!currentSearchConfig) {
-      throw new Error('Search configuration not set');
+      const client = new SearchClient({
+        provider: SearchProviderEnum.DuckduckgoSearch,
+        providerConfig: {},
+      });
+      const results = await client.search({
+        query: args.query,
+        count: args.count || 10,
+      });
+      return [
+        {
+          isError: false,
+          content: results,
+        },
+      ];
     }
 
     let results;

@@ -1,6 +1,5 @@
 {
-  "name": "@agent-infra/search",
-  "description": "Isomorphic search client",
+  "name": "@agent-infra/duckduckgo-search",
   "version": "0.0.1",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -27,14 +26,10 @@
     "run:example": "ts-node scripts/example.ts"
   },
   "dependencies": {
-    "@tavily/core": "0.3.1",
-    "@agent-infra/browser-search": "workspace:*",
-    "@agent-infra/bing-search": "workspace:*",
-    "@agent-infra/duckduckgo-search": "workspace:*",
+    "duck-duck-scrape": "^2.2.7",
     "@agent-infra/logger": "workspace:*"
   },
   "devDependencies": {
-    "@agent-infra/browser": "workspace:*",
     "@types/node": "20.14.8",
     "rimraf": "4.1.0",
     "typescript": "4.9.4",
